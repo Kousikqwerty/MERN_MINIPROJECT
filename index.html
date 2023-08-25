@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intermediate Quiz App</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  .quiz-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    display: block;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="quiz-container">
+  <h1>Quiz App</h1>
+  <p id="question">Question goes here</p>
+  <div id="options"></div>
+  <p id="result"></p>
+  <button id="nextButton" style="display: none;">Next</button>
+  <p id="timer">Time left: <span id="time">30</span> seconds</p>
+  <p id="score">Score: 0</p>
+</div>
+
+<script>
+const quizContainer = document.querySelector('.quiz-container');
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
+const resultElement = document.getElementById('result');
+const nextButton = document.getElementById('nextButton');
+const timerElement = document.getElementById('time');
+const scoreElement = document.getElementById('score');
+
+const questions = [
+  {
+    question: "What is 2 + 2?",
+    options: ["3", "4", "5", "6"],
+    correctOption: 1
+  },
+  {
+    question: "Which planet is closest to the sun?",
+    options: ["Earth", "Mars", "Venus", "Mercury"],
+    correctOption: 3
+  },{
+    question: "'OS' computer abbreviation usually means ?",
+    options: ["Order of Significance", 
+    "Open Software", "Operating System", "Open Source"],
+    correctOption: 3
+  },{
+    question: "'.MOV' extension refers usually to what kind of file?",
+    options: ["Image file", "Audio file", "Movie file", "MS OfficeDocument"],
+    correctOption: 3
+  },{
+    question: "Which is a type of Electrically-Erasable Programmable Read-Only Memory?",
+    options: ["FRAM", "Fury", "Flange", "Flash"],
+    correctOption: 4
+  },{
+    question: "Made from a variety of materials, such as carbon, which inhibits the flow of current...?",
+    options: ["Capacitor", "Resistor", "Inductor", "Choke"],
+    correctOption: 2
+  }
+];
+
+const totalTime = 30; // in seconds
+let currentQuestionIndex = 0;
+let score = 0;
+let timeLeft = totalTime;
+let timer;
+
+function showQuestion() {
+  const currentQuestion = questions[currentQuestionIndex];
+  questionElement.textContent = currentQuestion.question;
+
+  optionsElement.innerHTML = '';
+  currentQuestion.options.forEach((option, index) => {
+    const optionButton = document.createElement('button');
+    optionButton.textContent = option;
+    optionButton.addEventListener('click', () => checkAnswer(index));
+    optionsElement.appendChild(optionButton);
+  });
+
+  resultElement.textContent = '';
+  nextButton.style.display = 'none';
+}
+
+function checkAnswer(selectedIndex) {
+  clearInterval(timer);
+
+  const currentQuestion = questions[currentQuestionIndex];
+  if (selectedIndex === currentQuestion.correctOption) {
+    score++;
+    resultElement.textContent = 'Correct!';
+  } else {
+    resultElement.textContent = 'Incorrect!';
+  }
+
+  currentQuestionIndex++;
+  if (currentQuestionIndex < questions.length) {
+    nextButton.style.display = 'block';
+  } else {
+    showFinalScore();
+  }
+}
+
+function showFinalScore() {
+  quizContainer.innerHTML = `<h2>Quiz Finished</h2><p>Your score: ${score} out of ${questions.length}</p>`;
+}
+
+function startTimer() {
+  timer = setInterval(() => {
+    timeLeft--;
+    timerElement.textContent = `Time left: ${timeLeft} seconds`;
+
+    if (timeLeft === 0) {
+      clearInterval(timer);
+      checkAnswer(-1); // -1 indicates that time is up
+    }
+  }, 1000);
+}
+
+nextButton.addEventListener('click', () => {
+  timeLeft = totalTime;
+  startTimer();
+  showQuestion();
+});
+
+startTimer();
+showQuestion(); // Display the first question
+</script>
+</body>
+</html>
